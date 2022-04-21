@@ -3,12 +3,13 @@ import {ethers} from 'ethers';
 
 //Cogemos los datos de nuestro smart contract
 import {contractABI, contractAddress} from '../utils/constants';
+import { BsWindowSidebar } from 'react-icons/bs';
 
 //Creamos el contexto
 export const TransactionContext = React.createContext();
 
 //Acceso al objeto de ethereum, el cual coge desde el navegador a la hora de tener metamask funcionando
-const {ethereum} = window;
+const { ethereum } = window;
 
 //Cogemos el contrato
 const getEthereumContract = () => {
@@ -23,17 +24,48 @@ const getEthereumContract = () => {
 
 //Transferimos los datos necesarios para conectarse al blockchain
 export const TransactionProvider = ({ children }) => {
-    //Comprobamos si tiene una cuenta conectada y validamos que pueda cambiar de cuenta
-    const [currentAccount, setCurrentAccount] = useState('');
     //Cogemos los datos del formulario
-    const [formData, setFormData] = useState({ addressTo: '', amount: '', keyword: '', message: ''});
+    const [formData, setFormData] = useState({ addressTo: "", amount: "", keyword: "", message: ""});
+
+    //Comprobamos si tiene una cuenta conectada y validamos que pueda cambiar de cuenta
+    const [currentAccount, setCurrentAccount] = useState("");
+    
     //Estado de esta cargando
     const [isLoading, setIsLoading] = useState(false);
     //Contador de transacciones que almacenamos en la memoria para que no se reinicie
     const [transactionCount, setTransactionCount] = useState(localStorage.getItem('transactionCount'));
+    const [transactions, setTransactions] = useState([]);
+
 
     const handleChange = (e, name) => {
         setFormData((prevState) => ({...prevState, [name]: e.target.value }));
+    };
+
+    const getAllTransactions = async () => {
+        try {
+            if(!ethereum) return alert("Necesita instalar MetaMask");
+
+            const transactionsContract = getEthereumContract();
+
+            //Llamamos a la funcion de devolver todas las transacciones de nuestro smart contract
+            const availableTransactions = await transactionsContract.getAllTransactions();
+
+            //Realizamos la estructura de las transacciones para despues mostrarlas.
+            const structuredTransactions = availableTransactions.map((transaction) => ({
+                addressTo: transaction.receiver,
+                addressFrom: transaction.sender,
+                timestamp: new Date(transaction.timestamp.toNumber() * 1000).toLocaleString(),
+                message: transaction.message,
+                keyword: transaction.keyword,
+                amount: parseInt(transaction.amount._hex) / (10 ** 18)
+              }));
+
+            console.log(structuredTransactions);
+            setTransactions(structuredTransactions);
+            
+        } catch (error) {
+            console.log(error);
+        }
     }
 
     const checkIfWalletIsConnected = async () =>{
@@ -46,8 +78,8 @@ export const TransactionProvider = ({ children }) => {
             //Si hay una wallet conectada la añado a la array de cuentas
             if(accounts.length){
                 setCurrentAccount(accounts[0]);
-
-                //getAllTransactions();
+                //Obtenemos todas las transacciones
+                getAllTransactions();
             }else{
                 console.log("No hay cuentas");
             }
@@ -56,6 +88,23 @@ export const TransactionProvider = ({ children }) => {
             console.log(error);
             
             throw new Error("No hay objeto de Ethereum"); 
+        }
+    }
+
+    //Comprobamos que existan transacciones para mostrarlas
+    const checkIfTransactionsExist = async() => {
+        try {
+            //Cogemos el contract
+            const transactionsContract = getEthereumContract();
+            const transactionCount = await transactionsContract.getTransactionCount();
+
+            window.localStorage.setItem("transactionCount", transactionCount);
+            
+        } catch (error) {
+            console.log(error);
+                
+            throw new Error("No hay objeto de Ethereum"); 
+            
         }
     }
 
@@ -109,9 +158,11 @@ export const TransactionProvider = ({ children }) => {
             console.log(`Terminado - ${transactionHash.hash}`);
 
             //Cogemos el contador de transacciones
-            const transactionCount = await s.getTransactionCount();
+            const transactionCount = await transactionsContract.getTransactionCount();
 
             setTransactionCount(transactionCount.toNumber());
+
+            window.reload();
 
         } catch (error) {
             console.log(error);
@@ -120,14 +171,16 @@ export const TransactionProvider = ({ children }) => {
         }
     }
 
+    //Llamamos a los métodos una vez se utilice el contexto, al cargar la página
     useEffect(()=>{
         checkIfWalletIsConnected();
+        checkIfTransactionsExist();
     },[]);
 
     return(
         //Pasamos los objetos al contexto para poder utilizarlo
-        <TransactionContext.Provider value={{ connectWallet, currentAccount, formData, setFormData, handleChange, sendTransaction, transactionCount }}>
+        <TransactionContext.Provider value={{ connectWallet, currentAccount, formData, setFormData, handleChange, sendTransaction, transactionCount, transactions, isLoading }}>
             {children}
         </TransactionContext.Provider>
-    )
-}
+    );
+};

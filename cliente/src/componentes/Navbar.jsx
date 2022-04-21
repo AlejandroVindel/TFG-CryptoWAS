@@ -20,7 +20,7 @@ const Navbar = () => {
       </div>
       {/* Creamos la array del menú, junto a sus items*/}
       <ul className="text-white md:flex hidden list-none flex-row justify-between items-center flex-initial">
-        {["Market", "Exchange", "Tutorials", "Wallets"].map((item, index) => (
+        {["Mercado", "Exchange", "Transacciones", "Wallets"].map((item, index) => (
           <NavBarItem key={item + index} title={item} />
         ))}
         {/* Boton de login */}
