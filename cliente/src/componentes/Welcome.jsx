@@ -8,6 +8,7 @@ import { useDebugValue } from 'react';
 //Importamos la direccion abreviada
 import { shortDireccion } from '../utils/shortDireccion';
 
+
 //Variable que contiene estilos que reutilizaremos para las features del proyecto en los bloques dinámicos del className}
 const commonStyles = "min-h-[70px] sm:px-0 px-2 sm:min-w-[120px] flex justify-center items-center border-[0.5px] border-gray-400 text-sm font-light text-white";
 

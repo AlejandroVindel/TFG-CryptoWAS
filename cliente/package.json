@@ -7,15 +7,26 @@
     "serve": "vite preview"
   },
   "dependencies": {
+    "@ant-design/icons": "^4.7.0",
+    "@reduxjs/toolkit": "^1.8.1",
     "@tailwindcss/forms": "^0.3.4",
+    "antd": "^4.20.2",
     "autoprefixer": "^10.4.0",
+    "axios": "^0.27.2",
+    "chart.js": "^3.7.1",
     "eth-revert-reason": "^1.0.3",
     "ethers": "^5.5.1",
     "framer-motion": "^5.3.1",
+    "html-react-parser": "^1.4.12",
+    "millify": "^4.0.0",
+    "moment": "^2.29.3",
     "postcss": "^8.3.11",
     "react": "^17.0.0",
+    "react-chartjs-2": "^4.1.0",
     "react-dom": "^17.0.0",
-    "react-icons": "^4.3.1"
+    "react-icons": "^4.3.1",
+    "react-redux": "^8.0.1",
+    "react-router-dom": "^6.3.0"
   },
   "devDependencies": {
     "@vitejs/plugin-react": "^1.0.0",
