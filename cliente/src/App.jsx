@@ -5,7 +5,7 @@ import {
   Services,
   Transactions,
   Estadisticas,
-  News
+  News,
 } from "./componentes";
 //Importamos millify para hacer los números mas pequeños
 import millify from "millify";

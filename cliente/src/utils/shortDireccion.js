@@ -1,0 +1,2 @@
+// Hacer la dirección de la cartera más corta para mostrarla correctamente y no tan larga hasta 5 valores.
+export const shortDireccion = (address) => `${address.slice(0, 5)}...${address.slice(address.length - 4)}`;

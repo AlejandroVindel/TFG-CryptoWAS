@@ -1,7 +1,5 @@
 import React, { useState, useEffect } from "react";
 import millify from "millify";
-import { Typography, Row, Col, Statistic, Input } from "antd";
-import { Link } from "react-router-dom";
 //Importamos la query para obtener los datos de las criptomonedas
 import { useGetCryptosQuery } from "../services/cryptoApi";
 //Importamos iconos para utilizar en las cartas de las estadisticas
@@ -12,12 +10,12 @@ import {
   GiArmorDowngrade,
   GiArrowWings,
 } from "react-icons/gi";
-
-const { Title } = Typography;
+//Importamos el loader
+import Loader from '../componentes/Loader';
 
 //Carta de servicios, para reutilizarlo
 const ServicesCard = ({ color, tittle, icon, subtitle }) => (
-  <div className="flex flex-row justify-start items-center white-glassmorphism p-3 m-2 cursor-pointer hover:shadow-xl">
+  <div className="flex flex-row justify-start items-center white-glassmorphism p-3 m-2 hover:shadow-xl">
     <div
       className={`w-10 h-10 rounded-full flex justify-center items-center ${color}`}
     >
@@ -31,7 +29,7 @@ const ServicesCard = ({ color, tittle, icon, subtitle }) => (
 );
 //Carta de servicios con la cual mostraremos iconos
 const ServicesCardIcons = ({ color, tittle, icon, subtitle }) => (
-  <div className="flex flex-row justify-start items-center white-glassmorphism p-3 m-2 cursor-pointer hover:shadow-xl">
+  <div className="flex flex-row justify-start items-center white-glassmorphism p-3 m-2 hover:shadow-xl">
     <div
       className={`w-10 h-10 rounded-full flex justify-center items-center ${color}`}
     >
@@ -56,18 +54,13 @@ const Estadisticas = ({ simplified }) => {
   // //Cogemos la lista de las criptomonedas para el top de las criptomonedas
   const { lista: cryptoList, isFetching2 } = useGetCryptosQuery(count);
   const cryptos = data?.data?.coins;
-  // const [cryptos, setCryptos] = useState([]);
 
   //Buscador
   const [searchTerm, setSearchTerm] = useState("");
 
-  // useEffect(() => {
-  //   const datosFiltrados = data?.data?.coins.filter((coin) => coin.name.toLowerCase().includes(searchTerm.toLowerCase()));
+  useEffect(() => {}, [cryptos, searchTerm]);
 
-  //   setCryptos(datosFiltrados);
-  // },[cryptos, searchTerm]);
-
-  if (isFetching) return "Loading...";
+  if (isFetching) return <Loader/>;
 
   return (
     <div className="flex w-full justify-center items-center">
@@ -117,10 +110,6 @@ const Estadisticas = ({ simplified }) => {
                 Top 5 Criptomonedas
               </h1>
               <div className="flex-1 flex flex-col justify-start items-right">
-                <div className="search-crypto">
-                  {/* Bucador de cryptomonedas */}
-                  {/* <Input placeholder="Buscar Cryptomonedas" onChange={(e) => setSearchTerm(e.target.value)} /> */}
-                </div>
                 {cryptos?.map((currency) => (
                   <ServicesCard
                     color={currency.color}
